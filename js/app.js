@@ -110,10 +110,53 @@ function toggleSidebar() {
 }
 
 /* ════════════════════════════════════════════
+   Link Fetching Helper
+   ════════════════════════════════════════════ */
+
+let _linkCache = {};
+
+async function fetchLinkContent(inputId, statusId) {
+    const linkInput = document.getElementById(inputId);
+    const statusEl = document.getElementById(statusId);
+    if (!linkInput) return null;
+
+    const url = linkInput.value.trim();
+    if (!url) {
+        if (statusEl) statusEl.innerHTML = '';
+        return null;
+    }
+
+    // Check cache
+    if (_linkCache[url]) {
+        if (statusEl) statusEl.innerHTML = '<span class="link-status-ok">✅ Content loaded (cached)</span>';
+        return _linkCache[url];
+    }
+
+    if (statusEl) statusEl.innerHTML = '<span class="link-status-loading">🔄 Fetching content...</span>';
+
+    try {
+        const result = await LinkFetcher.fetchURL(url);
+        if (result && result.success) {
+            _linkCache[url] = result.content;
+            const wc = result.content.wordCount || 0;
+            const hc = result.content.headings?.length || 0;
+            if (statusEl) statusEl.innerHTML = `<span class="link-status-ok">✅ Loaded: ${wc} words, ${hc} sections</span>`;
+            return result.content;
+        } else {
+            if (statusEl) statusEl.innerHTML = `<span class="link-status-error">⚠️ ${result?.error || 'Could not fetch'} — generating without link</span>`;
+            return null;
+        }
+    } catch (err) {
+        if (statusEl) statusEl.innerHTML = '<span class="link-status-error">⚠️ Fetch failed — generating without link</span>';
+        return null;
+    }
+}
+
+/* ════════════════════════════════════════════
    Thread Builder
    ════════════════════════════════════════════ */
 
-function generateThread() {
+async function generateThread() {
     const topic = document.getElementById('thread-topic').value.trim();
     if (!topic) return showToast('Please enter a topic!', 'warning');
 
@@ -130,14 +173,19 @@ function generateThread() {
     btn.classList.add('loading');
     btn.textContent = 'Generating...';
 
+    // Fetch link content (async)
+    const linkContent = await fetchLinkContent('thread-link', 'link-status');
+
     setTimeout(() => {
-        const result = AIEngine.generateThread(topic, context, length, tone, currentMode);
+        const result = AIEngine.generateThread(topic, context, length, tone, currentMode, linkContent);
         lastThread = result;
         Storage.incrementUsage('threads');
         updateUsageDisplay();
         renderThreadResult(result, topic);
         btn.classList.remove('loading');
         btn.innerHTML = '⚡ Generate Thread';
+        if (linkContent) showToast('Thread generated from link content!', 'success');
+        else showToast('Thread generated!', 'success');
     }, 800 + Math.random() * 600);
 }
 
@@ -289,7 +337,7 @@ function swapCTA(index) {
    Article Generator
    ════════════════════════════════════════════ */
 
-function generateArticle() {
+async function generateArticle() {
     const topic = document.getElementById('thread-topic').value.trim();
     if (!topic) return showToast('Enter a topic first!', 'warning');
 
@@ -297,10 +345,14 @@ function generateArticle() {
     const output = document.getElementById('thread-output');
     output.innerHTML = '<div class="loading-shimmer" style="height:300px;border-radius:var(--radius-lg);"></div>';
 
+    // Fetch link content (async)
+    const linkContent = await fetchLinkContent('thread-link', 'link-status');
+
     setTimeout(() => {
-        const article = AIEngine.generateArticle(topic, context, currentMode);
+        const article = AIEngine.generateArticle(topic, context, currentMode, linkContent);
         renderArticleResult(article);
-        showToast('Article generated!', 'success');
+        if (linkContent) showToast('Article generated from link content!', 'success');
+        else showToast('Article generated!', 'success');
     }, 800 + Math.random() * 600);
 }
 
@@ -367,7 +419,7 @@ function copyArticle() {
 
 let currentHookFilter = 'all';
 
-function generateHooks() {
+async function generateHooks() {
     const topic = document.getElementById('hook-topic').value.trim();
     if (!topic) return showToast('Please enter a topic!', 'warning');
 
@@ -378,10 +430,14 @@ function generateHooks() {
     Storage.incrementUsage('hooks');
     updateUsageDisplay();
 
-    const hooks = AIEngine.generateHooks(topic, currentMode);
+    // Fetch link content (async)
+    const linkContent = await fetchLinkContent('hook-link', 'hook-link-status');
+
+    const hooks = AIEngine.generateHooks(topic, currentMode, linkContent);
     lastHooks = hooks;
     currentHookFilter = 'all';
     renderHooks(hooks);
+    if (linkContent) showToast('Hooks generated from link content!', 'success');
 }
 
 function renderHooks(hooks) {

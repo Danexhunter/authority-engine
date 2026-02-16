@@ -162,6 +162,49 @@
     color: #fbbf24;
 }
 
+/* Link Input */
+.link-input-wrapper {
+    position: relative;
+}
+
+.link-input-wrapper input[type="url"] {
+    width: 100%;
+    padding-left: var(--sp-md);
+    font-size: var(--fs-sm);
+}
+
+.link-status {
+    margin-top: var(--sp-xs);
+    min-height: 20px;
+    font-size: var(--fs-xs);
+}
+
+.link-status-loading {
+    color: var(--text-secondary);
+    animation: linkPulse 1.5s ease-in-out infinite;
+}
+
+.link-status-ok {
+    color: var(--primary);
+    font-weight: var(--fw-semi);
+}
+
+.link-status-error {
+    color: #fbbf24;
+}
+
+@keyframes linkPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
 /* Hook & Thread Scores */
 .hook-score-mini {
     font-family: var(--font-mono);

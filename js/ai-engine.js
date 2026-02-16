@@ -351,14 +351,81 @@ const AIEngine = (() => {
     };
 
     /* ═══════════════════════════════════════════════════════════
+       LINK-AWARE SEGMENT BUILDER
+       ═══════════════════════════════════════════════════════════ */
+    function buildLinkSegment(segType, topic, mode, modeConfig, digest, usedIdx) {
+        if (!digest) return null;
+        const ins = digest.topInsights || [];
+        const stats = digest.topStats || [];
+        const heads = digest.topHeadings || [];
+        const bullets = digest.topBullets || [];
+        const quotes = digest.topQuotes || [];
+
+        const pickUnused = (arr) => {
+            const key = arr === ins ? 'i' : arr === stats ? 's' : arr === heads ? 'h' : arr === bullets ? 'b' : 'q';
+            for (let j = 0; j < arr.length; j++) {
+                const k = key + j;
+                if (!usedIdx.has(k)) { usedIdx.add(k); return arr[j]; }
+            }
+            return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
+        };
+
+        switch (segType) {
+            case 'context': {
+                const h = pickUnused(heads);
+                const b = pickUnused(bullets);
+                if (h || b) return `${h || topic} — here's what you need to know:\n\n${b || digest.summary.substring(0, 240)}`;
+                break;
+            }
+            case 'insight': {
+                const i = pickUnused(ins);
+                if (i) return `Key insight:\n\n${i}`;
+                break;
+            }
+            case 'proof': {
+                const s1 = pickUnused(stats);
+                const s2 = pickUnused(stats);
+                if (s1) return `The data backs this up:\n\n→ ${s1}${s2 ? '\n→ ' + s2 : ''}\n\nNumbers don't lie.`;
+                break;
+            }
+            case 'tension': {
+                const i = pickUnused(ins);
+                if (i) return `But here's where it gets interesting:\n\n${i}`;
+                break;
+            }
+            case 'contrarian': {
+                const q = pickUnused(quotes);
+                if (q) return `The contrarian take:\n\n"${q}"\n\nAgree or disagree?`;
+                const i = pickUnused(ins);
+                if (i) return `Most people miss this entirely:\n\n${i}`;
+                break;
+            }
+            case 'expansion': {
+                const b1 = pickUnused(bullets);
+                const b2 = pickUnused(bullets);
+                const b3 = pickUnused(bullets);
+                if (b1) return `Going deeper:\n\n→ ${b1}${b2 ? '\n→ ' + b2 : ''}${b3 ? '\n→ ' + b3 : ''}`;
+                break;
+            }
+            case 'summary': {
+                const h = pickUnused(heads);
+                return `TL;DR on ${h || topic}:\n\n${digest.summary.substring(0, 220)}\n\nBookmark this.`;
+            }
+        }
+        return null;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
        GENERATE THREAD
        ═══════════════════════════════════════════════════════════ */
-    function generateThread(topic, context, length, tone, mode) {
+    function generateThread(topic, context, length, tone, mode, linkContent) {
         const modeConfig = MODES[mode] || MODES.web3;
         const len = THREAD_LENGTHS[length] || THREAD_LENGTHS.medium;
         const tweetCount = randInt(len.min, len.max);
         const thread = [];
         const categories = modeConfig.hookStyles;
+        const digest = linkContent ? (typeof LinkFetcher !== 'undefined' ? LinkFetcher.buildDigest(linkContent) : linkContent) : null;
+        const usedIdx = new Set();
 
         let arc = [...(NARRATIVE_ARCS[length] || NARRATIVE_ARCS.medium)];
         while (arc.length < tweetCount) {
@@ -373,9 +440,15 @@ const AIEngine = (() => {
             let text;
             if (segType === 'hook') {
                 const hookCat = pick(categories);
-                text = fillTemplate(pick(HOOK_TEMPLATES[hookCat] || HOOK_TEMPLATES.curiosity), topic, mode, modeConfig);
+                text = fillTemplate(pick(HOOK_TEMPLATES[hookCat] || HOOK_TEMPLATES.curiosity), topic, mode, modeConfig, digest);
             } else {
-                text = fillTemplate(pick(BODY_TEMPLATES[segType] || BODY_TEMPLATES.tension), topic, mode, modeConfig);
+                // Try link-aware content first, fall back to templates
+                const linkText = buildLinkSegment(segType, topic, mode, modeConfig, digest, usedIdx);
+                if (linkText && linkText.length <= 280) {
+                    text = linkText;
+                } else {
+                    text = fillTemplate(pick(BODY_TEMPLATES[segType] || BODY_TEMPLATES.tension), topic, mode, modeConfig, digest);
+                }
             }
             thread.push({ position: i + 1, type: segType, text });
         }
@@ -384,31 +457,33 @@ const AIEngine = (() => {
         const usedCats = shuffle(Object.keys(HOOK_TEMPLATES)).slice(0, randInt(5, 10));
         for (const cat of usedCats) {
             const tmpl = pick(HOOK_TEMPLATES[cat]);
-            const text = fillTemplate(tmpl, topic, mode, modeConfig);
+            const text = fillTemplate(tmpl, topic, mode, modeConfig, digest);
             hookVariations.push({ category: cat, text, score: scoreHook(text) });
         }
         hookVariations.sort((a, b) => b.score - a.score);
 
         const shortTweets = shuffle(SHORT_TWEET_TEMPLATES).slice(0, 5).map(t =>
-            fillTemplate(t, topic, mode, modeConfig)
+            fillTemplate(t, topic, mode, modeConfig, digest)
         );
         const alternateCTAs = generateAlternateCTAs(topic, mode);
         const engagementScore = computeScore(thread, mode);
+        if (digest) engagementScore + 5; // link-sourced content gets a boost
 
-        return { thread, hookVariations, shortTweets, alternateCTAs, engagementScore };
+        return { thread, hookVariations, shortTweets, alternateCTAs, engagementScore, hasLinkContent: !!digest };
     }
 
     /* ═══════════════════════════════════════════════════════════
        GENERATE HOOKS — 60+ with per-hook scoring
        ═══════════════════════════════════════════════════════════ */
-    function generateHooks(topic, mode) {
+    function generateHooks(topic, mode, linkContent) {
         const modeConfig = MODES[mode] || MODES.web3;
+        const digest = linkContent ? (typeof LinkFetcher !== 'undefined' ? LinkFetcher.buildDigest(linkContent) : linkContent) : null;
         const hooks = [];
         for (const cat of Object.keys(HOOK_TEMPLATES)) {
             const templates = HOOK_TEMPLATES[cat];
             const count = cat === 'degen' && mode !== 'web3' && mode !== 'shitpost' ? 2 : randInt(5, 8);
             shuffle(templates).slice(0, count).forEach(tmpl => {
-                const text = fillTemplate(tmpl, topic, mode, modeConfig);
+                const text = fillTemplate(tmpl, topic, mode, modeConfig, digest);
                 hooks.push({ category: cat, text, score: scoreHook(text) });
             });
         }
@@ -418,53 +493,103 @@ const AIEngine = (() => {
     /* ═══════════════════════════════════════════════════════════
        GENERATE ARTICLE
        ═══════════════════════════════════════════════════════════ */
-    function generateArticle(topic, context, mode) {
+    function generateArticle(topic, context, mode, linkContent) {
         const modeConfig = MODES[mode] || MODES.web3;
         const mPoints = MODE_POINTS[mode] || MODE_POINTS.web3;
         const mBullets = MODE_BULLETS[mode] || MODE_BULLETS.web3;
+        const digest = linkContent ? (typeof LinkFetcher !== 'undefined' ? LinkFetcher.buildDigest(linkContent) : linkContent) : null;
 
-        const title = pick([
-            `The Complete Guide to ${topic}: What Nobody's Telling You`,
-            `${topic} in ${pick(['2025', '2026'])}: A Deep Dive`,
-            `Why ${topic} Matters More Than Ever`,
-            `The ${topic} Playbook: From Theory to Execution`,
-            `Demystifying ${topic}: An Evidence-Based Breakdown`,
-        ]);
+        // Title — use link title if available
+        let title;
+        if (digest && digest.title) {
+            title = pick([
+                `${digest.title}: A Deep Analysis`,
+                `Breaking Down: ${digest.title}`,
+                `What ${digest.title} Really Means for ${topic}`,
+                `The Untold Story Behind ${digest.title}`,
+                `${digest.title} — And Why It Changes Everything`,
+            ]);
+        } else {
+            title = pick([
+                `The Complete Guide to ${topic}: What Nobody's Telling You`,
+                `${topic} in ${pick(['2025', '2026'])}: A Deep Dive`,
+                `Why ${topic} Matters More Than Ever`,
+                `The ${topic} Playbook: From Theory to Execution`,
+                `Demystifying ${topic}: An Evidence-Based Breakdown`,
+            ]);
+        }
 
-        const intro = `${pick(mPoints)}\n\nIn this article, we break down everything you need to know about ${topic} — from fundamentals to advanced strategies. Whether you're just getting started or sharpening your edge, this covers the full picture.\n\n${pick(mPoints)}`;
+        // Intro — weave in link summary if available
+        let intro;
+        if (digest && digest.summary) {
+            intro = `${digest.summary.substring(0, 300)}\n\nIn this article, we break down the key insights from this analysis of ${topic} — what the data shows, what it means, and how to position yourself.\n\n${pick(mPoints)}`;
+        } else {
+            intro = `${pick(mPoints)}\n\nIn this article, we break down everything you need to know about ${topic} — from fundamentals to advanced strategies. Whether you're just getting started or sharpening your edge, this covers the full picture.\n\n${pick(mPoints)}`;
+        }
 
-        const sectionTitles = shuffle([
-            `The Current State of ${topic}`,
-            `Why ${topic} Is at an Inflection Point`,
-            `The Framework for Understanding ${topic}`,
-            `Common Mistakes and How to Avoid Them`,
-            `The Data Behind ${topic}`,
-            `What the Experts Are Saying`,
-            `Actionable Steps You Can Take Today`,
-            `The Contrarian View`,
-            `Second-Order Effects Nobody's Discussing`,
-        ]).slice(0, randInt(3, 5));
+        // Sections — use link headings and content if available
+        let sectionTitles;
+        if (digest && digest.topHeadings.length >= 3) {
+            sectionTitles = digest.topHeadings.slice(0, randInt(3, 5));
+        } else {
+            sectionTitles = shuffle([
+                `The Current State of ${topic}`,
+                `Why ${topic} Is at an Inflection Point`,
+                `The Framework for Understanding ${topic}`,
+                `Common Mistakes and How to Avoid Them`,
+                `The Data Behind ${topic}`,
+                `What the Experts Are Saying`,
+                `Actionable Steps You Can Take Today`,
+                `The Contrarian View`,
+                `Second-Order Effects Nobody's Discussing`,
+            ]).slice(0, randInt(3, 5));
+        }
 
-        const sections = sectionTitles.map(sTitle => ({
-            title: sTitle,
-            body: `${pick(mPoints)}\n\n${pick(mPoints)}\n\nKey takeaways:\n\n→ ${pick(mBullets)}\n→ ${pick(mBullets)}\n→ ${pick(mBullets)}\n\n${pick(mPoints)}`,
-        }));
+        const linkParas = digest ? (digest.topInsights || []) : [];
+        const linkBullets = digest ? (digest.topBullets || []) : [];
+        const linkStats = digest ? (digest.topStats || []) : [];
+        let paraIdx = 0, bulletIdx = 0, statIdx = 0;
 
-        const conclusion = `${topic} isn't going away. The question is whether you'll be positioned to take advantage of what's coming.\n\n${pick(mPoints)}\n\nThe winners will be the ones who combine deep understanding with consistent execution. Start today.`;
+        const sections = sectionTitles.map(sTitle => {
+            let body;
+            if (digest && (linkParas.length > 0 || linkBullets.length > 0)) {
+                const p1 = linkParas[paraIdx] || pick(mPoints); paraIdx++;
+                const p2 = linkParas[paraIdx] || pick(mPoints); paraIdx++;
+                const b1 = linkBullets[bulletIdx] || pick(mBullets); bulletIdx++;
+                const b2 = linkBullets[bulletIdx] || pick(mBullets); bulletIdx++;
+                const b3 = linkBullets[bulletIdx] || pick(mBullets); bulletIdx++;
+                const stat = linkStats[statIdx] || '';
+                statIdx++;
+                body = `${p1}\n\n${p2}${stat ? '\n\nKey data: ' + stat : ''}\n\nKey takeaways:\n\n→ ${b1}\n→ ${b2}\n→ ${b3}`;
+            } else {
+                body = `${pick(mPoints)}\n\n${pick(mPoints)}\n\nKey takeaways:\n\n→ ${pick(mBullets)}\n→ ${pick(mBullets)}\n→ ${pick(mBullets)}\n\n${pick(mPoints)}`;
+            }
+            return { title: sTitle, body };
+        });
+
+        // Conclusion
+        let conclusion;
+        if (digest && digest.topInsights.length > 0) {
+            const lastInsight = digest.topInsights[digest.topInsights.length - 1] || '';
+            conclusion = `${topic} isn't going away. ${lastInsight}\n\nThe question is whether you'll be positioned to take advantage of what's coming. The winners will be the ones who combine deep understanding with consistent execution.\n\n${digest.author ? 'Source: ' + digest.author + (digest.sourceUrl ? ' — ' + digest.sourceUrl : '') : ''}\n\nStart today.`;
+        } else {
+            conclusion = `${topic} isn't going away. The question is whether you'll be positioned to take advantage of what's coming.\n\n${pick(mPoints)}\n\nThe winners will be the ones who combine deep understanding with consistent execution. Start today.`;
+        }
 
         const excerpts = shuffle(SHORT_TWEET_TEMPLATES).slice(0, 5).map(t =>
-            fillTemplate(t, topic, mode, modeConfig)
+            fillTemplate(t, topic, mode, modeConfig, digest)
         );
 
-        return { title, intro, sections, conclusion, excerpts };
+        return { title, intro, sections, conclusion, excerpts, hasLinkContent: !!digest };
     }
 
     /* ═══════════════════════════════════════════════════════════
        GENERATE SHITPOSTS
        ═══════════════════════════════════════════════════════════ */
-    function generateShitposts(topic, mood, degenLevel) {
+    function generateShitposts(topic, mood, degenLevel, linkContent) {
         const posts = [];
         const count = randInt(8, 14);
+        const digest = linkContent ? (typeof LinkFetcher !== 'undefined' ? LinkFetcher.buildDigest(linkContent) : linkContent) : null;
         const moodPx = {
             bullish: ['We\'re all gonna make it.', 'Number only goes up.', 'LFG 🚀', 'The vibes have never been better.'],
             bearish: ['Pain.', 'This is fine. 🔥', 'We deserve this.', 'My portfolio rn: 📉💀', 'HODL they said.'],
@@ -476,9 +601,20 @@ const AIEngine = (() => {
             crabbing: ['😐', 'zzzz'], chaos: ['🔥🔥🔥', '😱', 'AAAAAAA'],
         };
 
+        // Link-aware meme inserts
+        const linkMemes = [];
+        if (digest) {
+            if (digest.title) linkMemes.push(`"${digest.title}" — sounds like a threat tbh`);
+            if (digest.topStats.length) linkMemes.push(`They said ${digest.topStats[0]} like it's normal. SER.`);
+            if (digest.topInsights.length) linkMemes.push(`"${digest.topInsights[0].substring(0, 100)}" ok buddy`);
+            if (digest.topQuotes.length) linkMemes.push(`"${digest.topQuotes[0].substring(0, 80)}" — trust me bro certified`);
+        }
+
         for (let i = 0; i < count; i++) {
             const format = pick(ADVANCED_SHITPOST_FORMATS);
-            const body = pick(SHITPOST_BODIES).replaceAll('{topic}', topic || 'the market');
+            const body = (linkMemes.length && Math.random() > 0.5)
+                ? pick(linkMemes)
+                : pick(SHITPOST_BODIES).replaceAll('{topic}', topic || 'the market');
             const prefix = pick(moodPx[mood] || moodPx.chaos);
             const suffix = pick(moodSx[mood] || moodSx.chaos);
             let text = degenLevel >= 4 ? `${format}\n\n${body}\n\n${prefix}\n\n${suffix}`
@@ -604,10 +740,22 @@ const AIEngine = (() => {
     /* ═══════════════════════════════════════════════════════════
        TEMPLATE FILL ENGINE
        ═══════════════════════════════════════════════════════════ */
-    function fillTemplate(template, topic, mode, modeConfig) {
+    function fillTemplate(template, topic, mode, modeConfig, digest) {
         const mc = modeConfig || MODES[mode] || MODES.web3;
         const mPoints = MODE_POINTS[mode] || MODE_POINTS.web3;
         const mBullets = MODE_BULLETS[mode] || MODE_BULLETS.web3;
+
+        // Link-aware replacements
+        const linkTitle = digest && digest.title ? digest.title : topic || 'this space';
+        const linkInsight = digest && digest.topInsights && digest.topInsights.length
+            ? digest.topInsights[Math.floor(Math.random() * digest.topInsights.length)]
+            : `The best approach to ${topic || 'success'} is the one nobody's willing to try.`;
+        const linkStat = digest && digest.topStats && digest.topStats.length
+            ? digest.topStats[Math.floor(Math.random() * digest.topStats.length)]
+            : genStat(topic);
+        const linkQuote = digest && digest.topQuotes && digest.topQuotes.length
+            ? digest.topQuotes[Math.floor(Math.random() * digest.topQuotes.length)]
+            : '';
 
         const r = {
             '{topic}': topic || 'this space',
@@ -619,17 +767,20 @@ const AIEngine = (() => {
             '{year}': pick(['2024', '2025', '2026']),
             '{timeframe}': pick(['month', 'week', 'quarter', 'year']),
             '{event}': pick(['lost everything', 'had a breakthrough', 'made a critical discovery', 'changed my entire strategy']),
-            '{modePoint}': pick(mPoints).replaceAll('{topic}', topic || 'this space').replaceAll('{percentage}', pick(['73', '82', '91'])),
-            '{bullet1}': pick(mBullets).replaceAll('{percentage}', pick(['73', '82', '91'])),
-            '{bullet2}': pick(mBullets).replaceAll('{percentage}', pick(['64', '78', '88'])),
-            '{bullet3}': pick(mBullets).replaceAll('{percentage}', pick(['55', '69', '93'])),
-            '{stat1}': genStat(topic), '{stat2}': genStat(topic), '{stat3}': genStat(topic),
+            '{modePoint}': (digest && digest.topInsights && digest.topInsights.length
+                ? pick(digest.topInsights)
+                : pick(mPoints)
+            ).replaceAll('{topic}', topic || 'this space').replaceAll('{percentage}', pick(['73', '82', '91'])),
+            '{bullet1}': (digest && digest.topBullets && digest.topBullets.length ? digest.topBullets[0] : pick(mBullets)).replaceAll('{percentage}', pick(['73', '82', '91'])),
+            '{bullet2}': (digest && digest.topBullets && digest.topBullets.length > 1 ? digest.topBullets[1] : pick(mBullets)).replaceAll('{percentage}', pick(['64', '78', '88'])),
+            '{bullet3}': (digest && digest.topBullets && digest.topBullets.length > 2 ? digest.topBullets[2] : pick(mBullets)).replaceAll('{percentage}', pick(['55', '69', '93'])),
+            '{stat1}': linkStat, '{stat2}': genStat(topic), '{stat3}': genStat(topic),
             '{before}': pick(['struggling', 'losing money', 'stuck at 0', 'invisible']),
             '{after}': pick(['thriving', 'profitable', '10x growth', 'industry leader']),
-            '{summary}': `Master ${topic || 'this'} by focusing on fundamentals, data, and consistency.`,
+            '{summary}': digest && digest.summary ? digest.summary.substring(0, 200) : `Master ${topic || 'this'} by focusing on fundamentals, data, and consistency.`,
             '{mistake}': pick(['do everything at once', 'follow the crowd', 'skip fundamentals', 'chase trends']),
             '{solution}': pick(['focus on one thing', 'build in public', 'master the basics', 'think long-term']),
-            '{insight}': pick([`The best approach to ${topic || 'success'} is the one nobody's willing to try.`, `The winners in ${topic || 'every field'} started before they felt ready.`]),
+            '{insight}': linkInsight,
             '{tip}': pick(['Start before you\'re ready', 'Consistency beats talent', 'Simple scales, complex fails']),
             '{step1}': pick(['Study the top performers', 'Identify the gap', 'Build your foundation']),
             '{step2}': pick(['Execute relentlessly', 'Iterate on feedback', 'Double down on what works']),
@@ -640,6 +791,10 @@ const AIEngine = (() => {
             '{thing}': pick(['buying the dip', 'checking charts', 'posting threads', 'shipping features']),
             '{bad}': pick(['paper hands', 'lurker', 'follower']),
             '{good}': pick(['diamond hands', 'builder', 'thought leader']),
+            '{linkTitle}': linkTitle,
+            '{linkInsight}': linkInsight,
+            '{linkStat}': linkStat,
+            '{linkQuote}': linkQuote,
         };
 
         let result = template;

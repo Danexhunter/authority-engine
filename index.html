@@ -283,6 +283,13 @@
                 <textarea id="thread-topic" rows="3" placeholder="e.g., Why Solana will dominate 2025..."></textarea>
               </div>
               <div class="form-group">
+                <label>🔗 Source Link <span class="optional">(optional)</span></label>
+                <div class="link-input-wrapper">
+                  <input type="url" id="thread-link" placeholder="Paste an article, blog, or project URL..." />
+                  <div id="link-status" class="link-status"></div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label>Context <span class="optional">(optional)</span></label>
                 <textarea id="thread-context" rows="2" placeholder="Add data, links, or key points..."></textarea>
               </div>
@@ -336,6 +343,13 @@
             <div class="form-group">
               <label>Topic <span class="required">*</span></label>
               <input type="text" id="hook-topic" placeholder="e.g., Productivity hacks for founders" />
+            </div>
+            <div class="form-group">
+              <label>🔗 Source Link <span class="optional">(optional)</span></label>
+              <div class="link-input-wrapper">
+                <input type="url" id="hook-link" placeholder="Paste a URL to pull real data into hooks..." />
+                <div id="hook-link-status" class="link-status"></div>
+              </div>
             </div>
             <button class="btn btn-primary btn-full btn-glow" onclick="generateHooks()">
               ⚡ Generate 30+ Hooks
@@ -529,6 +543,7 @@
   </div>
 
   <script src="js/constants.js"></script>
+  <script src="js/link-fetcher.js"></script>
   <script src="js/ai-engine.js"></script>
   <script src="js/image-renderer.js"></script>
   <script src="js/storage.js"></script>
