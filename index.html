@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authority Engine — AI-Powered X Content Creator</title>
+  <meta name="description"
+    content="Turn ideas into structured, high-authority threads, visuals, and engagement packs. Built for Web3 creators, brands, and content builders." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/modules.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════ LANDING PAGE ═══════════════════════════════════════════ -->
+  <div id="landing-page" class="page active">
+    <nav class="landing-nav">
+      <div class="nav-brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-name">Authority Engine</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <button class="btn btn-primary btn-glow" onclick="showPage('mode-select')">Launch App</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-badge">🚀 AI-Powered Content Engine for X</div>
+      <h1 class="hero-title">
+        Turn Ideas Into<br />
+        <span class="gradient-text">High-Authority Threads</span>
+      </h1>
+      <p class="hero-subtitle">
+        Generate engagement-optimized threads, viral hooks, branded visuals, and full content packs — in seconds. Built
+        for Web3, creators, and brands.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-xl btn-glow" onclick="showPage('mode-select')">
+          Generate My First Thread <span class="btn-arrow">→</span>
+        </button>
+        <button class="btn btn-ghost btn-xl"
+          onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+          See How It Works
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-number">30+</span><span class="stat-label">Hook Variations</span></div>
+        <div class="stat"><span class="stat-number">4</span><span class="stat-label">Image Types</span></div>
+        <div class="stat"><span class="stat-number">5</span><span class="stat-label">Content Modes</span></div>
+        <div class="stat"><span class="stat-number">0→100</span><span class="stat-label">Engagement Score</span></div>
+      </div>
+    </section>
+
+    <!-- Demo Thread -->
+    <section class="demo-section">
+      <h2 class="section-title">See It In Action</h2>
+      <div class="demo-thread">
+        <div class="demo-tweet demo-hook">
+          <div class="tweet-meta"><span class="tweet-badge">📌 Hook</span><span class="score-badge">Score: 94</span>
+          </div>
+          <p>I spent 6 months studying the top 100 viral threads on X.</p>
+          <p>Here's the exact formula they all share — and nobody talks about it: 🧵</p>
+        </div>
+        <div class="demo-tweet">
+          <div class="tweet-meta"><span class="tweet-pos">2/8</span></div>
+          <p>Every viral thread has 3 hidden layers:</p>
+          <p>→ An emotional trigger in the first line<br />→ A "micro-cliffhanger" every 2 tweets<br />→ A payoff that
+            makes people hit bookmark</p>
+        </div>
+        <div class="demo-tweet">
+          <div class="tweet-meta"><span class="tweet-pos">3/8</span></div>
+          <p>The hook isn't about being clever.</p>
+          <p>It's about creating a KNOWLEDGE GAP.</p>
+          <p>"I discovered..." → gap<br />"Nobody talks about..." → gap<br />"Here's why..." → gap</p>
+        </div>
+        <div class="demo-tweet demo-cta">
+          <div class="tweet-meta"><span class="tweet-badge">🎯 CTA</span></div>
+          <p>Found this useful?</p>
+          <p>♻️ Repost to share with your network<br />🔖 Save for your next thread<br />➡️ Follow @you for daily
+            content frameworks</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features-section">
+      <h2 class="section-title">Everything You Need to <span class="gradient-text">Dominate X</span></h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧵</div>
+          <h3>Thread Builder</h3>
+          <p>Full threads with hook variations, tension curves, and engagement triggers. Pick short, medium, or long —
+            every structure is proven.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎣</div>
+          <h3>Hook Lab</h3>
+          <p>30+ hooks per topic across 6 categories: authority, curiosity, data-driven, controversial, story-based, and
+            degen.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Image Engine</h3>
+          <p>Template-driven visuals: intro covers, data cards, quote cards, and memes — branded with your colors and
+            logo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Content Packs</h3>
+          <p>One click: full thread + 4 images + 5 short tweets. Everything you need in a single pack.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎤</div>
+          <h3>Voice Replication</h3>
+          <p>Paste your tweets, we learn your voice. Generate content that sounds exactly like you. Premium feature.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💀</div>
+          <h3>Shitpost Intelligence</h3>
+          <p>Narrative-aware meme captions. Market-reactive. Degen-approved. Viral by design.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="pricing-section">
+      <h2 class="section-title">Simple, Transparent <span class="gradient-text">Pricing</span></h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-tier">Free</div>
+          <div class="pricing-price">$0<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>✓ 5 threads / day</li>
+            <li>✓ 10 hooks / day</li>
+            <li>✓ 3 images / day</li>
+            <li>✓ Watermarked exports</li>
+            <li>✓ 20 vault items</li>
+            <li class="disabled">✗ Voice Replication</li>
+            <li class="disabled">✗ Content Packs</li>
+            <li class="disabled">✗ Logo Integration</li>
+          </ul>
+          <button class="btn btn-ghost btn-full" onclick="showPage('mode-select')">Get Started</button>
+        </div>
+        <div class="pricing-card pricing-popular">
+          <div class="popular-badge">Most Popular</div>
+          <div class="pricing-tier">Pro</div>
+          <div class="pricing-price">$24<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li>✓ Unlimited threads</li>
+            <li>✓ Unlimited hooks</li>
+            <li>✓ Unlimited images</li>
+            <li>✓ HD export, no watermark</li>
+            <li>✓ Unlimited vault</li>
+            <li>✓ Voice Replication</li>
+            <li>✓ Content Packs</li>
+            <li>✓ Logo + Brand Kit</li>
+          </ul>
+          <button class="btn btn-primary btn-full btn-glow" onclick="showPage('mode-select')">Start Pro Trial</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="landing-footer">
+      <p>⚡ Authority Engine — Built for creators who refuse to be ignored.</p>
+    </footer>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ MODE SELECT ═══════════════════════════════════════════ -->
+  <div id="mode-select" class="page">
+    <div class="mode-select-container">
+      <button class="back-btn" onclick="showPage('landing-page')">← Back</button>
+      <h1 class="mode-title">Choose Your <span class="gradient-text">Mode</span></h1>
+      <p class="mode-subtitle">Each mode tunes the AI for your audience. You can switch anytime.</p>
+      <div class="mode-grid">
+        <button class="mode-card" data-mode="web3" onclick="selectMode('web3')">
+          <span class="mode-icon">🌐</span>
+          <span class="mode-name">Web3</span>
+          <span class="mode-desc">Alpha-style content for crypto, DeFi, NFTs. CT-native tone, conviction-driven
+            threads.</span>
+        </button>
+        <button class="mode-card" data-mode="creator" onclick="selectMode('creator')">
+          <span class="mode-icon">🎨</span>
+          <span class="mode-name">Creator</span>
+          <span class="mode-desc">Authentic, story-driven content for audience growth. Personal brand building.</span>
+        </button>
+        <button class="mode-card" data-mode="business" onclick="selectMode('business')">
+          <span class="mode-icon">💼</span>
+          <span class="mode-name">Business</span>
+          <span class="mode-desc">Professional, data-backed thought leadership. B2B authority threads.</span>
+        </button>
+        <button class="mode-card" data-mode="shitpost" onclick="selectMode('shitpost')">
+          <span class="mode-icon">💀</span>
+          <span class="mode-name">Shitpost</span>
+          <span class="mode-desc">Degen energy. Viral memes. Market-reactive content. NFA.</span>
+        </button>
+        <button class="mode-card" data-mode="educational" onclick="selectMode('educational')">
+          <span class="mode-icon">📚</span>
+          <span class="mode-name">Educational</span>
+          <span class="mode-desc">Clear, structured tutorials and explainers. Knowledge sharing that lands.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ DASHBOARD ═══════════════════════════════════════════ -->
+  <div id="dashboard" class="page">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-name">Authority Engine</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-module="thread-builder" onclick="switchModule('thread-builder')">
+          <span class="nav-icon">🧵</span> Thread Builder
+        </button>
+        <button class="nav-item" data-module="hook-lab" onclick="switchModule('hook-lab')">
+          <span class="nav-icon">🎣</span> Hook Lab
+        </button>
+        <button class="nav-item" data-module="image-engine" onclick="switchModule('image-engine')">
+          <span class="nav-icon">🎨</span> Image Engine
+        </button>
+        <button class="nav-item" data-module="content-pack" onclick="switchModule('content-pack')">
+          <span class="nav-icon">📦</span> Content Pack
+        </button>
+        <button class="nav-item" data-module="voice-engine" onclick="switchModule('voice-engine')">
+          <span class="nav-icon">🎤</span> Voice Engine
+          <span class="premium-tag">PRO</span>
+        </button>
+        <button class="nav-item" data-module="shitpost" onclick="switchModule('shitpost')">
+          <span class="nav-icon">💀</span> Shitpost Intel
+        </button>
+        <hr class="nav-divider" />
+        <button class="nav-item" data-module="vault" onclick="switchModule('vault')">
+          <span class="nav-icon">🔒</span> Vault
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="usage-meter">
+          <div class="usage-label">Daily Usage</div>
+          <div class="usage-bar">
+            <div class="usage-fill" id="usage-fill"></div>
+          </div>
+          <div class="usage-text" id="usage-text">0/5 threads</div>
+        </div>
+        <button class="btn btn-primary btn-sm btn-full" onclick="showPage('mode-select')">Switch Mode</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+          <h2 class="topbar-title" id="module-title">Thread Builder</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="mode-badge" id="mode-badge">
+            <span class="mode-badge-icon">🌐</span>
+            <span class="mode-badge-name">Web3 Mode</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ─── Thread Builder Module ─── -->
+      <div id="module-thread-builder" class="module active">
+        <div class="module-layout">
+          <div class="module-input-panel">
+            <div class="panel-card">
+              <h3 class="panel-title">Generate Thread</h3>
+              <div class="form-group">
+                <label>Topic / Idea <span class="required">*</span></label>
+                <textarea id="thread-topic" rows="3" placeholder="e.g., Why Solana will dominate 2025..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Context <span class="optional">(optional)</span></label>
+                <textarea id="thread-context" rows="2" placeholder="Add data, links, or key points..."></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Length</label>
+                  <select id="thread-length">
+                    <option value="short">Short (3–5)</option>
+                    <option value="medium" selected>Medium (7–10)</option>
+                    <option value="long">Long (12–18)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tone Override</label>
+                  <select id="thread-tone">
+                    <option value="auto">Auto (from mode)</option>
+                    <option value="aggressive">Aggressive</option>
+                    <option value="calm">Calm & Confident</option>
+                    <option value="hype">High Energy</option>
+                    <option value="analytical">Analytical</option>
+                    <option value="storytelling">Storytelling</option>
+                  </select>
+                </div>
+              </div>
+              <div class="generate-btn-group">
+                <button class="btn btn-primary btn-full btn-glow generate-btn" onclick="generateThread()">
+                  ⚡ Generate Thread
+                </button>
+                <button class="btn btn-ghost btn-full" onclick="generateArticle()">
+                  📝 Generate Article
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="module-output-panel" id="thread-output">
+            <div class="empty-state">
+              <span class="empty-icon">🧵</span>
+              <h3>No thread yet</h3>
+              <p>Enter a topic and hit generate to create your first thread.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Hook Lab Module ─── -->
+      <div id="module-hook-lab" class="module">
+        <div class="module-layout single-column">
+          <div class="panel-card" style="max-width: 600px;">
+            <h3 class="panel-title">🎣 Generate Hooks</h3>
+            <div class="form-group">
+              <label>Topic <span class="required">*</span></label>
+              <input type="text" id="hook-topic" placeholder="e.g., Productivity hacks for founders" />
+            </div>
+            <button class="btn btn-primary btn-full btn-glow" onclick="generateHooks()">
+              ⚡ Generate 30+ Hooks
+            </button>
+          </div>
+          <div id="hook-output" class="hooks-container">
+            <div class="empty-state">
+              <span class="empty-icon">🎣</span>
+              <h3>No hooks yet</h3>
+              <p>Enter a topic to generate 30+ categorized hooks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Image Engine Module ─── -->
+      <div id="module-image-engine" class="module">
+        <div class="module-layout">
+          <div class="module-input-panel">
+            <div class="panel-card">
+              <h3 class="panel-title">🎨 Create Visual</h3>
+              <div class="form-group">
+                <label>Image Type</label>
+                <div class="type-selector">
+                  <button class="type-btn active" data-type="intro" onclick="selectImageType('intro')">📰 Intro
+                    Cover</button>
+                  <button class="type-btn" data-type="data" onclick="selectImageType('data')">📊 Data Card</button>
+                  <button class="type-btn" data-type="quote" onclick="selectImageType('quote')">💬 Quote Card</button>
+                  <button class="type-btn" data-type="meme" onclick="selectImageType('meme')">😂 Meme Card</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Headline <span class="required">*</span></label>
+                <input type="text" id="img-headline" placeholder="e.g., The Future of DeFi" />
+              </div>
+              <div class="form-group">
+                <label>Subtext <span class="optional">(optional)</span></label>
+                <input type="text" id="img-subtext" placeholder="e.g., 5 Trends You Can't Ignore" />
+              </div>
+              <div class="form-group">
+                <label>Logo <span class="optional">(optional)</span></label>
+                <div class="file-upload" id="logo-upload">
+                  <input type="file" id="logo-input" accept="image/*" onchange="handleLogoUpload(event)" />
+                  <span class="upload-text" id="upload-text">📎 Click to upload logo</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Brand Colors</label>
+                <div class="color-row">
+                  <div class="color-input">
+                    <label class="color-label">Primary</label>
+                    <input type="color" id="brand-primary" value="#00FF88" />
+                  </div>
+                  <div class="color-input">
+                    <label class="color-label">Background</label>
+                    <input type="color" id="brand-bg" value="#0a0a0f" />
+                  </div>
+                  <div class="color-input">
+                    <label class="color-label">Accent</label>
+                    <input type="color" id="brand-accent" value="#6366f1" />
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full btn-glow" onclick="renderImage()">
+                🎨 Generate Image
+              </button>
+            </div>
+          </div>
+          <div class="module-output-panel">
+            <div class="canvas-container">
+              <canvas id="image-canvas" width="1200" height="675"></canvas>
+            </div>
+            <div class="canvas-actions" id="canvas-actions" style="display:none;">
+              <button class="btn btn-primary" onclick="downloadImage()">⬇️ Download PNG</button>
+              <button class="btn btn-ghost" onclick="saveToVault('image')">🔒 Save to Vault</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Content Pack Module ─── -->
+      <div id="module-content-pack" class="module">
+        <div class="module-layout single-column">
+          <div class="panel-card" style="max-width:600px;">
+            <h3 class="panel-title">📦 Content Pack Generator</h3>
+            <p class="panel-desc">One click to generate a full content pack: thread + 4 visuals + 5 short tweets.</p>
+            <div class="form-group">
+              <label>Topic <span class="required">*</span></label>
+              <textarea id="pack-topic" rows="3"
+                placeholder="e.g., Why AI agents will replace SaaS tools..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-xl btn-full btn-glow" onclick="generateContentPack()">
+              ⚡ Generate Full Pack
+            </button>
+            <div class="pack-progress" id="pack-progress" style="display:none;">
+              <div class="progress-steps">
+                <div class="progress-step" id="step-thread"><span class="step-icon">🧵</span> Thread</div>
+                <div class="progress-step" id="step-images"><span class="step-icon">🎨</span> Images</div>
+                <div class="progress-step" id="step-tweets"><span class="step-icon">🐦</span> Short Tweets</div>
+                <div class="progress-step" id="step-done"><span class="step-icon">✅</span> Done!</div>
+              </div>
+            </div>
+          </div>
+          <div id="pack-output" class="pack-gallery"></div>
+        </div>
+      </div>
+
+      <!-- ─── Voice Engine Module ─── -->
+      <div id="module-voice-engine" class="module">
+        <div class="module-layout single-column">
+          <div class="panel-card" style="max-width:700px;">
+            <div class="premium-banner">
+              <span class="premium-icon">👑</span>
+              <span>Voice Replication — Pro Feature</span>
+            </div>
+            <h3 class="panel-title">🎤 Voice Replication Engine</h3>
+            <p class="panel-desc">Paste 10–20 of your best tweets. We'll extract your unique voice profile and generate
+              content that sounds exactly like you.</p>
+            <div class="form-group">
+              <label>Your Tweets <span class="required">*</span></label>
+              <textarea id="voice-tweets" rows="10"
+                placeholder="Paste your tweets here, one per line...&#10;&#10;Example:&#10;The market doesn't care about your feelings.&#10;Here's what 3 years of trading taught me:&#10;Everyone's a genius in a bull market."></textarea>
+            </div>
+            <button class="btn btn-primary btn-full btn-glow" onclick="analyzeVoice()">
+              🎤 Analyze My Voice
+            </button>
+          </div>
+          <div id="voice-output" class="voice-result"></div>
+        </div>
+      </div>
+
+      <!-- ─── Shitpost Intel Module ─── -->
+      <div id="module-shitpost" class="module">
+        <div class="module-layout single-column">
+          <div class="panel-card" style="max-width:600px;">
+            <h3 class="panel-title">💀 Shitpost Intelligence</h3>
+            <p class="panel-desc">Narrative-aware meme content. Market-reactive. Viral by design.</p>
+            <div class="form-group">
+              <label>Topic / Narrative <span class="required">*</span></label>
+              <input type="text" id="shitpost-topic" placeholder="e.g., SOL memecoin pump, ETH gas fees..." />
+            </div>
+            <div class="form-group">
+              <label>Market Mood</label>
+              <select id="shitpost-mood">
+                <option value="bullish">🟢 Bullish / Euphoria</option>
+                <option value="bearish">🔴 Bearish / Despair</option>
+                <option value="crabbing">🦀 Crabbing / Bored</option>
+                <option value="chaos">🔥 Full Chaos</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Degen Level</label>
+              <input type="range" id="degen-level" min="1" max="5" value="3" oninput="updateDegenLabel(this.value)" />
+              <div class="range-labels">
+                <span>Mild 😏</span>
+                <span id="degen-label">Degen 💀</span>
+                <span>Nuclear ☢️</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-full btn-glow" onclick="generateShitposts()">
+              💀 Generate Shitposts
+            </button>
+          </div>
+          <div id="shitpost-output" class="shitpost-results"></div>
+        </div>
+      </div>
+
+      <!-- ─── Vault Module ─── -->
+      <div id="module-vault" class="module">
+        <div class="module-layout single-column">
+          <div class="vault-header">
+            <h3 class="panel-title">🔒 Your Vault</h3>
+            <div class="vault-filters">
+              <button class="filter-btn active" onclick="filterVault('all')">All</button>
+              <button class="filter-btn" onclick="filterVault('thread')">🧵 Threads</button>
+              <button class="filter-btn" onclick="filterVault('hook')">🎣 Hooks</button>
+              <button class="filter-btn" onclick="filterVault('image')">🎨 Images</button>
+            </div>
+          </div>
+          <div id="vault-items" class="vault-grid">
+            <div class="empty-state">
+              <span class="empty-icon">🔒</span>
+              <h3>Vault is empty</h3>
+              <p>Save threads, hooks, and images here for quick access.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/constants.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/image-renderer.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
